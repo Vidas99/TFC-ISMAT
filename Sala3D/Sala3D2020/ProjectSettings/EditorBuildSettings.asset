@@ -4,11 +4,4 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/Sala.unity
-    guid: e64acfac0a5ffc44d8fdda28cf25fc42
-  - enabled: 1
-    path: Assets/Scenes/Hall.unity
-    guid: 5ec392d148b84624b8ab6bebfacb8c3a
-  m_configObjects: {}
+  m_Scenes: []
