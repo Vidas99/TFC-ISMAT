@@ -101,7 +101,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
+            Vector3 desiredMove = transform.forward * m_Input.y + transform.right * m_Input.x; // ????+ transform.up* m_YRotation;
 
             // get a normal for the surface that is being touched to move along it
             RaycastHit hitInfo;
@@ -111,6 +111,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             m_MoveDir.x = desiredMove.x*speed;
             m_MoveDir.z = desiredMove.z*speed;
+            //m_MoveDir.y = desiredMove.y * speed;
 
 
             if (m_CharacterController.isGrounded)

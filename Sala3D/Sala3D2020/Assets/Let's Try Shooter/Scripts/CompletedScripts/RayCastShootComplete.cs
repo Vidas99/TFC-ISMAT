@@ -63,6 +63,8 @@ public class RayCastShootComplete : MonoBehaviour {
 				{
 					// Call the damage function of that script, passing in our gunDamage variable
 					health.Damage (gunDamage);
+					// carregar video no video player
+					// TODO: Alterar classe shootablebox e criar uma nova classe interactableobject para efetuar o load dos videos.
 				}
 
 				// Check if the object we hit has a rigidbody attached
