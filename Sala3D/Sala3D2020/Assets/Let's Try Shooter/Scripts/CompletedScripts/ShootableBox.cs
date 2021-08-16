@@ -15,6 +15,7 @@ public class ShootableBox : MonoBehaviour {
 		if (currentHealth <= 0) 
 		{
 			//if health has fallen below zero, deactivate it 
+			video
 			gameObject.SetActive (false);
 		}
 	}
