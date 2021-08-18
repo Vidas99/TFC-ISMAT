@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.Video;
 
-public class ShootableBox : MonoBehaviour {
+public class ClickableBox : MonoBehaviour {
 
 	public string videoURL { get; set; }
 	
@@ -16,10 +16,10 @@ public class ShootableBox : MonoBehaviour {
 	}
 
 
-	public void Damage(int damageAmount)
+	public void ClickDetection(int hitDetection)
 	{
 		//subtract damage amount when Damage function is called
-		currentHealth -= damageAmount*3;
+		currentHealth -= hitDetection*3;
 
 		//Check if health has fallen below zero
 		if (currentHealth <= 0) 
