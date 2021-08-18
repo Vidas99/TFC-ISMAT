@@ -13,6 +13,9 @@ public class RayCastShootComplete : MonoBehaviour {
 	private Camera fpsCam;												// Holds a reference to the first person camera
 	private WaitForSeconds shotDuration = new WaitForSeconds(0.07f);	// WaitForSeconds object used by our ShotEffect coroutine, determines time laser line will remain visible
 	private AudioSource gunAudio;										// Reference to the audio source which will play our shooting sound effect
+	private AudioSource videoLoadedSound;
+	private AudioClip clip;
+	public float clipVolume = 0.5f;// Reference to the audio source which will play our shooting sound effect
 	private LineRenderer laserLine;										// Reference to the LineRenderer component which will display our laserline
 	private float nextFire;
 	private VideoPlayer vp { get; set; }		
@@ -27,8 +30,8 @@ public class RayCastShootComplete : MonoBehaviour {
 
 		vp = GameObject.Find("ScreenPlayer").GetComponent<VideoPlayer>();
 		// Get and store a reference to our AudioSource component
-		gunAudio = GetComponent<AudioSource>();
-
+		videoLoadedSound = GameObject.Find("projector").GetComponent<AudioSource>();
+		clip = Resources.Load<AudioClip>("Assets/Sounds/VideoLoaded");
 		// Get and store a reference to our Camera by searching this GameObject and its parents
 		fpsCam = GetComponentInParent<Camera>();
 	}
@@ -76,7 +79,8 @@ public class RayCastShootComplete : MonoBehaviour {
 						//get object name and set it to the Url value of the video player
 						health.SetVideoPlayerURL(hit.transform.gameObject.name.ToString());
 						vp.url = health.videoURL;
-						gunAudio.Play();
+						videoLoadedSound.Play();
+						//gunAudio.Play();
 						
 					}
 					else if (hit.transform.gameObject.name.Equals("PlayVideo"))
@@ -114,11 +118,11 @@ public class RayCastShootComplete : MonoBehaviour {
 
 	private IEnumerator ShotEffect()
 	{
-		// Play the shooting sound effect
-		//gunAudio.Play ();
+        // Play the shooting sound effect
+        //gunAudio.Play();
 
-		// Turn on our line renderer
-		laserLine.enabled = true;
+        // Turn on our line renderer
+        laserLine.enabled = true;
 
 		//Wait for .07 seconds
 		yield return shotDuration;
