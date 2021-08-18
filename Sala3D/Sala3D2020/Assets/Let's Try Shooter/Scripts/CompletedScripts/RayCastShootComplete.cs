@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Video;
 
 public class RayCastShootComplete : MonoBehaviour {
 
@@ -13,14 +14,18 @@ public class RayCastShootComplete : MonoBehaviour {
 	private WaitForSeconds shotDuration = new WaitForSeconds(0.07f);	// WaitForSeconds object used by our ShotEffect coroutine, determines time laser line will remain visible
 	private AudioSource gunAudio;										// Reference to the audio source which will play our shooting sound effect
 	private LineRenderer laserLine;										// Reference to the LineRenderer component which will display our laserline
-	private float nextFire;												// Float to store the time the player will be allowed to fire again, after firing
+	private float nextFire;
+	private VideoPlayer vp { get; set; }		
+	// Float to store the time the player will be allowed to fire again, after firing
 
+	
 
 	void Start () 
 	{
 		// Get and store a reference to our LineRenderer component
 		laserLine = GetComponent<LineRenderer>();
 
+		vp = GameObject.Find("ScreenPlayer").GetComponent<VideoPlayer>();
 		// Get and store a reference to our AudioSource component
 		gunAudio = GetComponent<AudioSource>();
 
@@ -54,18 +59,42 @@ public class RayCastShootComplete : MonoBehaviour {
 			{
 				// Set the end position for our laser line 
 				laserLine.SetPosition (1, hit.point);
-
+				
 				// Get a reference to a health script attached to the collider we hit
 				ShootableBox health = hit.collider.GetComponent<ShootableBox>();
-
+				
 				// If there was a health script attached
 				if (health != null)
 				{
 					// Call the damage function of that script, passing in our gunDamage variable
 					health.Damage (gunDamage);
 					// carregar video no video player
-					// TODO: Alterar classe shootablebox e criar uma nova classe interactableobject para efetuar o load dos videos.
+					//hit.transform.gameObject.name
+					if ((hit.transform.gameObject.name != "ScreenPlayer") && (hit.transform.gameObject.name != "PlayVideo") 
+							&& (hit.transform.gameObject.name != "PauseVideo") && (hit.transform.gameObject.name != "StopVideo"))
+					{
+						//get object name and set it to the Url value of the video player
+						health.SetVideoPlayerURL(hit.transform.gameObject.name.ToString());
+						vp.url = health.videoURL;
+						gunAudio.Play();
+						
+					}
+					else if (hit.transform.gameObject.name.Equals("PlayVideo"))
+					{
+						vp.Play();
+					}
+					else if (hit.transform.gameObject.name.Equals("PauseVideo"))
+					{
+						vp.Pause();
+					}
+					else if (hit.transform.gameObject.name.Equals("StopVideo"))
+					{
+						vp.Stop();
+					}
+					
 				}
+
+				
 
 				// Check if the object we hit has a rigidbody attached
 				if (hit.rigidbody != null)
@@ -86,7 +115,7 @@ public class RayCastShootComplete : MonoBehaviour {
 	private IEnumerator ShotEffect()
 	{
 		// Play the shooting sound effect
-		gunAudio.Play ();
+		//gunAudio.Play ();
 
 		// Turn on our line renderer
 		laserLine.enabled = true;
