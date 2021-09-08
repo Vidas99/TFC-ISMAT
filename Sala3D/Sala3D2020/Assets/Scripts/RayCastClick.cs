@@ -5,18 +5,18 @@ using UnityEngine.Video;
 public class RayCastClick : MonoBehaviour
 {
     
-    // Set the number of hitpoints that this gun will take away from shot objects with a health script
+    // Determina o valor de cada laser.
     public int laserClick = 1;
-    // Number in seconds which controls how often the player can fire
+    // Delay entre lasers (em tempo)
     public float clickRate = 0.25f;
-    // Distance in Unity units over which the player can fire
+    // Distância(comprimento) do laser.
     public float clickRange = 50f;
  
-    // Holds a reference to the gun end object, marking the muzzle location of the gun
+    // Simboliza onde o cano do apontador "aponta"
     public Transform gunEnd;                                            
-    // Holds a reference to the first person camera
+    // Referencia a camara principal
     private Camera fpsCam;
-    // WaitForSeconds object used by our ShotEffect coroutine, determines time laser line will remain visible
+    // WaitForSeconds é o objeto utilizado no ShotEffect (determina se o laser é visivel ou nao) e quanto tempo o laser fica visivel.
     private WaitForSeconds laserDuration = new WaitForSeconds(0.07f);    
     
     private AudioSource videoLoadedSound;
@@ -24,65 +24,70 @@ public class RayCastClick : MonoBehaviour
     private AudioClip clip;
     
     public float clipVolume = 0.5f;
-    // Reference to the LineRenderer component which will display our laserline
+    // Referencia ao componente LineRenderer que determina se o laser vai ser visivel ou não.
     private LineRenderer laserLine;                                     
-    
+    //Tempo(float) até que o jogador possa enviar outro laser (após já ter lançado um)
     private float nextFire;
-    
+    //Videoplayer que irá ser associado para a reprodução de media
     private VideoPlayer vp { get; set; }
-    // Float to store the time the player will be allowed to fire again, after firing
+   
 
 
 
     void Start()
     {
-        // Get and store a reference to our LineRenderer component
+        // Inicia o componente LineRenderer
         laserLine = GetComponent<LineRenderer>();
 
         vp = GameObject.Find("ScreenPlayer").GetComponent<VideoPlayer>();
-        // Get and store a reference to our AudioSource component
+        // Associa o som ao projetor
         videoLoadedSound = GameObject.Find("projector").GetComponent<AudioSource>();
-        // 
+        // diretoria do ficheiro de som
         clip = Resources.Load<AudioClip>("Assets/Sounds/VideoLoaded");
-        // Get and store a reference to our Camera by searching this GameObject and its parents
+        // Atualiza a posição da camara ao associar o componente.
         fpsCam = GetComponentInParent<Camera>();
     }
 
 
     void Update()
     {
-        // Check if the player has pressed the fire button and if enough time has elapsed since they last fired
+        // Verifica se o jogador disparou um laser e se passou tempo suficiente desde que o lançou. 
         if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
         {
-            // Update the time when our player can fire next
+            // Atualiza o tempo quando o jogador puder enviar outro laser.
             nextFire = Time.time + clickRate;
 
-            // Start our ShotEffect coroutine to turn our laser line on and off
+            // Inicia a rotina de tornar o laser on e off
             StartCoroutine(ShotEffect());
 
-            // Create a vector at the center of our camera's viewport
+            // Cria o vetor para centrar no centro do ecra (campo de visão)(canto inferior esquerdo é (0f,0f,0f), 0,5f simboliza o centro do ecra).
             Vector3 rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.0f));
 
-            // Declare a raycast hit to store information about what our raycast has hit
+            // Declara quando o laser "acerta" para guardar a informação
             RaycastHit hit;
 
-            // Set the start position for our visual effect for our laser to the position of gunEnd
+            // Marca a posição inicial do laser, começa no gunEnd
             laserLine.SetPosition(0, gunEnd.position);
 
-            // Check if our raycast has hit anything
+            // Verifica se o laser atingiu um objecto válido
             if (Physics.Raycast(rayOrigin, fpsCam.transform.forward, out hit, clickRange))
             {
-                // Set the end position for our laser line 
+                // Determina o "fim" do laser (quando embate em algo) 
                 laserLine.SetPosition(1, hit.point);
 
-                // Get a reference to a health script attached to the collider we hit
+                // Cria a referência de guardar a informação quando "é atingido" pelo laser. (o script ClickableBox tem de ser
+                // associado aos objetos que queremos despoletar acções após ser atingido)
                 ClickableBox box = hit.collider.GetComponent<ClickableBox>();
 
-                // If there was a health script attached
+                // Caso o scrip esteja associado, quando o quadro da UC recebe um laser, associa o video pretendido á tela(screenplayer) de forma a
+                //ser possível reproduzir o video e ativa os botões para controlar a reprodução do video.
                 if (box != null)
                 {
                     // carregar video no video player
                     //hit.transform.gameObject.name
+
+                    //Se o laser ñ atingir a tela, ou botao de play,pause ou stop, carregar o URL do video ao VideoPlayer
+                    //verifica se o nome do objeto atingido é diferente da tela ou botões de media. Caso seja true ele carrega o URL com o nome do quadro da UC.
                     if ((hit.transform.gameObject.name != "ScreenPlayer") && (hit.transform.gameObject.name != "PlayVideo")
                             && (hit.transform.gameObject.name != "PauseVideo") && (hit.transform.gameObject.name != "StopVideo"))
                     {
@@ -90,15 +95,15 @@ public class RayCastClick : MonoBehaviour
                         vp.url = box.videoURL;
                         videoLoadedSound.Play();
                     }
-                    else if (hit.transform.gameObject.name.Equals("PlayVideo"))
+                    else if (hit.transform.gameObject.name.Equals("PlayVideo")) // verifica se o nome do objeto atingido é o botao de play, se for, inicia o video
                     {
                         vp.Play();
                     }
-                    else if (hit.transform.gameObject.name.Equals("PauseVideo"))
+                    else if (hit.transform.gameObject.name.Equals("PauseVideo")) // verifica se o nome do objeto atingido é o botao de pause, se for, pausa o video
                     {
                         vp.Pause();
                     }
-                    else if (hit.transform.gameObject.name.Equals("StopVideo"))
+                    else if (hit.transform.gameObject.name.Equals("StopVideo")) // verifica se o nome do objeto atingido é o botao de stop, se for, pára o video
                     {
                         vp.Stop();
                     }
@@ -107,7 +112,7 @@ public class RayCastClick : MonoBehaviour
             }
             else
             {
-                // If we did not hit anything, set the end of the line to a position directly in front of the camera at the distance of weaponRange
+                // Se o laser não atinja nada acima, calcula-se o range maximo que este pode atingir
                 laserLine.SetPosition(1, rayOrigin + (fpsCam.transform.forward * clickRange));
             }
         }
@@ -120,7 +125,7 @@ public class RayCastClick : MonoBehaviour
         // Turn on our line renderer
         laserLine.enabled = true;
 
-        //Wait for .07 seconds
+        //Espera .07 seconds
         yield return laserDuration;
 
         // Deactivate our line renderer after waiting

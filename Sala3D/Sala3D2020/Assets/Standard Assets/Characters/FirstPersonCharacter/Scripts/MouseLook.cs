@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
-
+/// <summary>
+/// Este script envolve todo o tipo de modificações que se pode aplicar ao movimento do rato.
+/// </summary>
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     [Serializable]

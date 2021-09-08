@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
-
+/// <summary>
+/// Este script aborda o esqueleto(body) do jogador, velocidades de movimento, colisões, etc.
+/// </summary>
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     [RequireComponent(typeof (Rigidbody))]

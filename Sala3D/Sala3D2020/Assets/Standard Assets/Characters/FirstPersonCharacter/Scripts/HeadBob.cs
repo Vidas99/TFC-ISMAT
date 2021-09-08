@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.Utility;
-
+/// <summary>
+/// Este script consiste na interligação da camara e o body , através dos diferentes movimentos, velocidades e acções.
+/// </summary>
 namespace UnityStandardAssets.Characters.FirstPerson
 {
     public class HeadBob : MonoBehaviour
@@ -13,7 +15,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public float StrideInterval;
         [Range(0f, 1f)] public float RunningStrideLengthen;
 
-       // private CameraRefocus m_CameraRefocus;
+       
         private bool m_PreviouslyGrounded;
         private Vector3 m_OriginalCameraPosition;
 
@@ -22,13 +24,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             motionBob.Setup(Camera, StrideInterval);
             m_OriginalCameraPosition = Camera.transform.localPosition;
-       //     m_CameraRefocus = new CameraRefocus(Camera, transform.root.transform, Camera.transform.localPosition);
+  
         }
 
 
         private void Update()
         {
-          //  m_CameraRefocus.GetFocusPoint();
+          
             Vector3 newCameraPosition;
             if (rigidbodyFirstPersonController.Velocity.magnitude > 0 && rigidbodyFirstPersonController.Grounded)
             {
@@ -49,7 +51,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = rigidbodyFirstPersonController.Grounded;
-          //  m_CameraRefocus.SetFocusPoint();
+          
         }
     }
 }

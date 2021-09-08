@@ -11,7 +11,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
     public class FirstPersonController : MonoBehaviour
     {
         
-        //disable warning about unassigned variable, as it is assigned by the serialization.
+        //Parametros da deslocação do avatar serializados de forma a estarem protegidos de acesso exterior mas continuarem 
+        //a poder ser acedidos e modificados dentro do unity.
 #pragma warning disable CS0649
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private float m_WalkSpeed;
@@ -27,9 +28,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private CurveControlledBob m_HeadBob = new CurveControlledBob();
         [SerializeField] private LerpControlledBob m_JumpBob = new LerpControlledBob();
         [SerializeField] private float m_StepInterval;
-        [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
-        [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
-        [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+        [SerializeField] private AudioClip[] m_FootstepSounds;
+        [SerializeField] private AudioClip m_JumpSound;           
+        [SerializeField] private AudioClip m_LandSound;           
 #pragma warning restore CS0649
         
         private Camera m_Camera;
@@ -62,7 +63,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        // Update is called once per frame
+        // Valida se o avatar pode ou não saltar, se está no chao(grounded) ou no ar(jumping) e os ficheiros de midia associados.
         private void Update()
         {
             RotateView();
@@ -100,7 +101,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             float speed;
             GetInput(out speed);
-            // always move along the camera forward as it is the direction that it being aimed at
+            // Ligação do movimento do corpo com a posição da camara.
             Vector3 desiredMove = transform.forward * m_Input.y + transform.right * m_Input.x;
 
             // get a normal for the surface that is being touched to move along it
@@ -113,7 +114,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_MoveDir.z = desiredMove.z*speed;
             
 
-
+            //parte da gravidade em manter o jogador no chao.
             if (m_CharacterController.isGrounded)
             {
                 m_MoveDir.y = -m_StickToGroundForce;
@@ -145,7 +146,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource.Play();
         }
 
-
+        //calculo dos passos enquanto anda/corre (1ºPé,2ºPé,1ºPé,...)
         private void ProgressStepCycle(float speed)
         {
             if (m_CharacterController.velocity.sqrMagnitude > 0 && (m_Input.x != 0 || m_Input.y != 0))
@@ -181,7 +182,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_FootstepSounds[0] = m_AudioSource.clip;
         }
 
-
+        //ajuste da camara para com o corpo(avatar)
         private void UpdateCameraPosition(float speed)
         {
             Vector3 newCameraPosition;
@@ -229,8 +230,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 m_Input.Normalize();
             }
 
-            // handle speed change to give an fov kick
-            // only if the player is going to a run, is running and the fovkick is to be used
+            
+            // ajuste do campo de visão com base se o jogador se encontra a andar ou correr (ajuda na imersão que o jogador está a correr)
             if (m_IsWalking != waswalking && m_UseFovKick && m_CharacterController.velocity.sqrMagnitude > 0)
             {
                 StopAllCoroutines();
